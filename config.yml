@@ -1,0 +1,7 @@
+Magnata:
+  UpdateTimeSeconds: 300
+  ShouldUpdateForSameMagnata: false
+  PreviousTagHolderName: TiagoFar78
+  SetMagnataCommands:
+  - "pex user {PLAYER} group add Magnata"
+  - "&ftitle &2{PLAYER} &fé o novo &2magnata"
