@@ -114,7 +114,7 @@ public class MagnataTag extends PrestigeTag {
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
                     System.out.println("Error: " + responseCode);
-                    return null;
+                    return new ArrayList<Payment>();
                 }
                 
                 JSONObject pagePayments = getPagePayments(connection);
@@ -160,8 +160,6 @@ public class MagnataTag extends PrestigeTag {
         while ((line = reader.readLine()) != null) {
             response.append(line);
         }
-
-        System.out.println(response.toString());
 
         reader.close();
         
