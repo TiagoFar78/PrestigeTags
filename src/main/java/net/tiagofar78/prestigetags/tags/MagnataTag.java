@@ -1,6 +1,8 @@
 package net.tiagofar78.prestigetags.tags;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -10,6 +12,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -26,8 +29,15 @@ import net.tiagofar78.prestigetags.objects.Payment;
 
 public class MagnataTag extends PrestigeTag {
 	
+	private String _serverSecretKey = getServerSecretKey();
+	
 	@Override
 	public void registerTag() {
+		if (_serverSecretKey == null) {
+			Bukkit.getLogger().info("THERE WAS A PROBLEM TRYING TO REGISTER MAGNATA TAG! Write your server secret key in the respective file!");
+			return;
+		}
+		
 		ConfigManager config = ConfigManager.getInstance();
 		
 		runScheduler(config.getMagnataUpdateTimeSeconds());
@@ -174,7 +184,23 @@ public class MagnataTag extends PrestigeTag {
 	};
 	
 	private String getServerSecretKey() {
-		return "SERVER_SECRET_KEY";
+		File myObj = new File("ServerSecretKey.txt");
+        Scanner myReader = null;
+        
+		try {
+			myReader = new Scanner(myObj);
+	        if (!myReader.hasNextLine()) {
+		        myReader.close();
+	        	return null;
+	        }
+	        
+	        myReader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+        
+        return myReader.nextLine();
 	}
 
 }
