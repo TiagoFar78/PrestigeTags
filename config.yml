@@ -4,4 +4,5 @@ Magnata:
   PreviousTagHolderName: TiagoFar78
   SetMagnataCommands:
   - "pex user {PLAYER} group add Magnata"
+  - "pex user {PREVPLAYER} group remove Magnata"
   - "&ftitle &2{PLAYER} &fé o novo &2magnata"
