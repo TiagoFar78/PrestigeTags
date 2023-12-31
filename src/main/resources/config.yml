@@ -5,4 +5,4 @@ Magnata:
   SetMagnataCommands:
   - "pex user {PLAYER} group add Magnata"
   - "pex user {PREVPLAYER} group remove Magnata"
-  - "&ftitle &2{PLAYER} &fé o novo &2magnata"
+  - "title &2{PLAYER} the new Magnata"

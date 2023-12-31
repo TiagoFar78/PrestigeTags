@@ -15,7 +15,7 @@ public class Payment {
 	}
 	
 	private LocalDateTime toDate(String s) {
-		return LocalDateTime.parse(s);
+		return LocalDateTime.parse(s.substring(0, 19));
 	}
 	
 	public double getAmount() {

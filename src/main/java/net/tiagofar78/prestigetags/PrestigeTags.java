@@ -12,14 +12,14 @@ import net.tiagofar78.prestigetags.tags.PrestigeTag;
 
 public class PrestigeTags extends JavaPlugin {
 	
-	public static void main(String[] args) {
-		System.out.println(new MagnataTag().getMagnata());
-	}
-	
 	private static final PrestigeTag[] TAGS = { new MagnataTag() };
 	
 	@Override
-	public void onEnable() {
+	public void onEnable() {		
+		if (!new File(getDataFolder(), "config.yml").exists()) {
+			saveDefaultConfig();
+		}
+		
 		for (PrestigeTag tag : TAGS) {
 			tag.registerTag();
 		}

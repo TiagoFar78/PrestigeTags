@@ -29,12 +29,15 @@ import net.tiagofar78.prestigetags.objects.Payment;
 
 public class MagnataTag extends PrestigeTag {
 	
-	private String _serverSecretKey = getServerSecretKey();
+	private static final int TICKS_IN_SECOND = 20;
+	
+	private String _serverSecretKey;
 	
 	@Override
 	public void registerTag() {
+		_serverSecretKey = getServerSecretKey();
 		if (_serverSecretKey == null) {
-			Bukkit.getLogger().info("THERE WAS A PROBLEM TRYING TO REGISTER MAGNATA TAG! Write your server secret key in the respective file!");
+			Bukkit.getLogger().info("THERE WAS A PROBLEM TRYING TO REGISTER MAGNATA TAG! Write your server secret key in the ServerSecretKey.txt file! You may have to create it");
 			return;
 		}
 		
@@ -52,7 +55,7 @@ public class MagnataTag extends PrestigeTag {
 				
 				runScheduler(delay);
 			}
-		}, delay);
+		}, delay * TICKS_IN_SECOND);
 	}
 	
 	@Override
@@ -65,6 +68,7 @@ public class MagnataTag extends PrestigeTag {
 		ConfigManager config = ConfigManager.getInstance();
 		
 		String previousMagnata = config.getPreviousMagnataName();
+		config.setNewMagnata(magnataName);
 		
 		if (!config.shouldUpdateMagnataForSameHolder() && previousMagnata.equals(magnataName)) {
 			return;
@@ -88,7 +92,7 @@ public class MagnataTag extends PrestigeTag {
 			Payment payment = (Payment) paymentO;
 			
 			String buyerName = payment.getBuyerName();
-			double currentSpentAmount = playersPaymentsAmount.get(buyerName);
+			double currentSpentAmount = playersPaymentsAmount.containsKey(buyerName) ? playersPaymentsAmount.get(buyerName) : 0;
 			
 			playersPaymentsAmount.put(buyerName, currentSpentAmount + payment.getAmount());
 		}
@@ -119,11 +123,10 @@ public class MagnataTag extends PrestigeTag {
 
                 connection.setRequestMethod("GET");
 
-                connection.setRequestProperty("Server-Secret-Key", getServerSecretKey());
+                connection.setRequestProperty("X-Tebex-Secret", _serverSecretKey);
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
-                    System.out.println("Error: " + responseCode);
                     return new ArrayList<Payment>();
                 }
                 
@@ -179,16 +182,23 @@ public class MagnataTag extends PrestigeTag {
 	private Predicate<Payment> wasMadeInCurrentMonth = new Predicate<Payment>() {
 		@Override
 		public boolean test(Payment payment) {
-			return payment.getDate().getMonth().getValue() == new GregorianCalendar().get(Calendar.MONTH) + 1;
+			GregorianCalendar calendar = new GregorianCalendar();
+			int currentMonth = calendar.get(Calendar.MONTH) + 1;
+			int currentYear = calendar.get(Calendar.YEAR);
+			
+			return payment.getDate().getMonth().getValue() == currentMonth && payment.getDate().getYear() == currentYear;
 		}
 	};
 	
 	private String getServerSecretKey() {
-		File myObj = new File("ServerSecretKey.txt");
+		File file = new File(PrestigeTags.getPrestigeTags().getDataFolder(), "ServerSecretKey.txt");
+		if (!file.exists()) {
+			return null;
+		}
+		
         Scanner myReader = null;
-        
 		try {
-			myReader = new Scanner(myObj);
+			myReader = new Scanner(file);
 	        if (!myReader.hasNextLine()) {
 		        myReader.close();
 	        	return null;
@@ -200,7 +210,9 @@ public class MagnataTag extends PrestigeTag {
 			return null;
 		}
         
-        return myReader.nextLine();
+		String secretKey = myReader.nextLine();
+		
+        return secretKey;
 	}
 
 }
