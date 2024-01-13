@@ -84,6 +84,10 @@ public class MagnataTag extends PrestigeTag {
 	
 	public String getMagnata() {
 		List<Payment> payments = getAllPayments();
+		if (payments == null) {
+			Bukkit.getLogger().info("THERE WAS A PROBLEM TRYING TO CONNECT TO TEBEX API! Make sure you placed the right secret key in your ServerSecretKey.txt file!");
+			return null;
+		}
 		
 		List<Object> currentMonthPayments = payments.stream().filter(wasMadeInCurrentMonth).collect(Collectors.toList());
 		
@@ -127,7 +131,7 @@ public class MagnataTag extends PrestigeTag {
 
                 int responseCode = connection.getResponseCode();
                 if (responseCode != HttpURLConnection.HTTP_OK) {
-                    return new ArrayList<Payment>();
+                    return null;
                 }
                 
                 JSONObject pagePayments = getPagePayments(connection);
